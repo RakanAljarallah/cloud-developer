@@ -1,5 +1,6 @@
 import fs from "fs";
 import Jimp = require("jimp");
+import path = require("path");
 
 // filterImageFromURL
 // helper function to download, filter, and save the filtered image locally
@@ -9,23 +10,25 @@ import Jimp = require("jimp");
 // RETURNS
 //    an absolute path to a filtered image locally saved file
 export async function filterImageFromURL(inputURL: string): Promise<string> {
+  if(!inputURL) {
+    return undefined;
+  };
+
   return new Promise(async (resolve, reject) => {
     try {
       const photo = await Jimp.read(inputURL);
-      const outpath =
-        "/tmp/filtered." + Math.floor(Math.random() * 2000) + ".jpg";
-      await photo
-        .resize(256, 256) // resize
+      const outpath ="util/tmp/filtered." + Math.floor(Math.random() * 2000) + ".jpg";
+       photo.resize(256, 256) // resize
         .quality(60) // set JPEG quality
         .greyscale() // set greyscale
         .write(__dirname + outpath, (img) => {
-          resolve(__dirname + outpath);
+           resolve(__dirname + outpath);
         });
     } catch (error) {
-      reject(error);
-    }
+       reject(error);
+    };
   });
-}
+};
 
 // deleteLocalFiles
 // helper function to delete files on the local disk
@@ -36,4 +39,19 @@ export async function deleteLocalFiles(files: Array<string>) {
   for (let file of files) {
     fs.unlinkSync(file);
   }
+}
+
+export async function clearFiles (directory:string = './util/tmp') {
+
+  fs.readdir(directory, (err, files) => {
+    if (err) throw err;
+
+    for (const file of files)
+    {      
+      fs.unlink(path.join(directory, file), (err) => {
+        if (err) throw err;
+      });
+    }
+  });
+  
 }

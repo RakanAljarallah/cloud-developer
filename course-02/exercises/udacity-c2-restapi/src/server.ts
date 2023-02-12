@@ -8,9 +8,19 @@ import bodyParser from 'body-parser';
 import { V0MODELS } from './controllers/v0/model.index';
 
 (async () => {
+  
   await sequelize.addModels(V0MODELS);
-  await sequelize.sync();
+  console.log('here');
 
+  
+  await sequelize.authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
+  
   const app = express();
   const port = process.env.PORT || 8080; // default port to listen
   
@@ -26,9 +36,8 @@ import { V0MODELS } from './controllers/v0/model.index';
   app.use('/api/v0/', IndexRouter)
 
   // Root URI call
-  app.get( "/", async ( req, res ) => {
-    res.send( "/api/v0/" );
-  } );
+  // res.send( "/api/v0/" );
+   
   
 
   // Start the Server
